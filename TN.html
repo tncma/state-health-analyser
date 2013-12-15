@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Gov</title>
+
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="03.css">	
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>		
+
+<!-- Grab jQuery from Google -->
+  <link rel="stylesheet" media="all" href="jquery-jvectormap-1.2.2.css"/>
+  <link rel="stylesheet" media="all" href="jquery-ui-1.8.22.custom.css"/>
+  <script src="jquery-1.8.2.min.js"></script>
+  <script src="jquery-jvectormap-1.2.2.min.js"></script>
+  <script src="jquery-jvectormap-in-merc-en.js"></script>
+  <script src="jquery-ui-1.8.22.custom.min.js"></script>
+  <script>
+
+$(function(){      
+$.getJSON('tnstate.json', function(data){
+    var val = 2009;
+        statesValues = jvm.values.apply({}, jvm.values(data.states)),
+        metroPopValues = Array.prototype.concat.apply([], jvm.values(data.metro.ranking)),
+        metroUnemplValues = Array.prototype.concat.apply([], jvm.values(data.metro.ranking));
+    $('.world-map-gdp').vectorMap({
+      map: 'in_merc_en',
+focusOn:{
+x: 0.3,
+y: 0.89,
+scale: 4
+},
+      markers: data.metro.coords,
+markersSelectable: true,
+      series: {
+        markers: [{
+          attribute: 'fill',
+          scale: ['#FEE5D9', '#A50F15'],
+          values: data.metro.ranking[val],
+          min: jvm.min(metroUnemplValues),
+          max: jvm.max(metroUnemplValues)
+        },{
+          attribute: 'r',
+          scale: [5, 20],
+          values: data.metro.ranking[val],
+          min: jvm.min(metroPopValues),
+          max: jvm.max(metroPopValues)
+        }],
+        regions: [{
+          scale: ['#DEEBF7', '#08519C'],
+          attribute: 'fill',
+          values: data.states[val],
+          min: jvm.min(statesValues),
+          max: jvm.max(statesValues)
+        }]
+      },
+onMarkerSelected: function(){
+      
+	  alert('Hi');
+	  createGraph('#data-table', '.chart', '.CA');
+   },
+      onMarkerLabelShow: function(event, label, index){
+        label.html(
+          '('+data.metro.names[index]+'); '+
+          'Population: '+data.metro.ranking[val][index]+'; '+
+          'Unemployement: '+data.metro.ranking[val][index]+'%'
+        );
+
+       },
+      onRegionLabelShow: function(event, label, code){
+        label.html(
+          ' '+label.html()+'-'+
+          'State Values: '+data.states[val][code]+'%'
+        );
+      }
+    });
+
+    var mapObject = $('.world-map-gdp').vectorMap('get', 'mapObject');
+
+    $(".slider").slider({
+      value: val,
+      min: 2005,
+      max: 2009,
+      step: 1,
+      slide: function( event, ui ) {
+        val = ui.value;
+        mapObject.series.regions[0].setValues(data.states[ui.value]);
+        mapObject.series.markers[0].setValues(data.metro.ranking[ui.value]);
+        mapObject.series.markers[1].setValues(data.metro.ranking[ui.value]);
+      }
+    });
+  });
+});      
+  </script>
+  <script src="03.js"></script>
+</head>
+<body>
+<div>
+<h1>Gov<h1>
+</div>
+  <div class="world-map-gdp" style="width: 800px; height: 600px"></div>
+  <div class="slider" style="width: 280px; margin: 10px"></div>
+<div>
+<h4>Move the Slider to visualise the sales between January 2013 to May 2013</h4>
+<p>Hover over the State and Circle to visualise the Statistics</p>
+<p>* Dark Blue indicates Business is Excellent; Light Blue indicates Business is Good; Almost White indicates Business is Poor</p>
+<p>* Bigger the Red Circle is, bigger is the Revenue from the Particular City</p>
+</div>
+<div class="toggles">
+			<p><a href="#" id="reset-graph-button">Reset graph</a><a href="#" id="return-button">ACE</a> Mouse over the States to display information.</p>
+		</div>
+		
+<div id="wrapper">
+<div class="chart">
+<h2>State Health Analyser</h2>
+<table id="data-table" border="1" cellpadding="10" cellspacing="0" summary="Insurance Progess">
+<caption>Count in thousands</caption>
+<thead>
+<tr>
+							<td>&nbsp;</td>
+							<th scope="col">Chennai</th>
+							<th scope="col">Trichy</th>
+							<th scope="col">Madurai</th>
+							<th scope="col">Salem</th>
+							<th scope="col">Erode</th>
+
+                                                        
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">Sanitation</th>
+							<td class="NY">4080</td>
+							<td class="CA">6080</td>
+							<td class="WA">3240</td>
+							<td class="TX">7520</td>
+							<td class="DT">9240</td>
+							
+						</tr>
+						<tr>
+							<th scope="row">Education</th>
+							<td class="NY">3680</td>
+							<td class="CA">5880</td>
+							<td class="WA">2760</td>
+							<td class="TX">6120</td>
+							<td class="DT">8640</td>
+							
+						</tr>
+						<tr>
+							<th scope="row">Infrastructure</th>
+							<td class="NY">2040</td>
+							<td class="CA">4760</td>
+							<td class="WA">1880</td>
+							<td class="TX">5720</td>
+							<td class="DT">7520</td>
+							
+						</tr>
+					</tbody>
+				</table>
+<div id="figure"></div>	
+			</div>
+
+
+<div class="toggles">
+			<p>
+                                             
+                                                <a href="#" id="NewYork1">Chennai</a>
+                                               <a href="#" id="California1">Trichy</a>
+                                               <a href="#" id="Arizona1">Madurai</a>
+                                               <a href="#" id="Texas1">Salem</a>
+                                               <a href="#" id="Alabama1">Erode</a>                             
+                                           </p>
+		</div>
+		</div>
+		
+		
+
+<div id="NewYork" style="width: 69px; height: 20px; top: 192px; left: 609px;">
+</div>
+
+<div id="California" style="width: 68px; height: 35px; top: 291px; left: 29px;">
+</div>
+
+<div id="Arizona"    
+            style="width: 64px; height: 37px; top: 339px; left: 127px; margin-bottom: 2px;">
+</div>
+
+<div id="Texas" style="width: 65px; height: 41px; top: 408px; left: 309px;">
+</div>
+
+<div id="Alabama" style="width: 47px; height: 26px; top: 377px; left: 500px;">
+</div>
+
+
+
+</body> 
+</html>
